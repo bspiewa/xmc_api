@@ -2,7 +2,7 @@
 Python REST API client for XMC NBI (GraphQL)
 
 ## Requrements
-Python version both 2 and 3 (tested on 2.7.18 and 3.9.0)
+Both Python versions 2 and 3 are supported (tested on 2.7.18 and 3.9.0)
 
 ## Features
 * Support for user credentials (HTTP Basic Authentication)
