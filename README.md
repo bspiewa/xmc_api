@@ -1,6 +1,12 @@
-# xmc-api
-XMC API Example
+# xmc_api
+Python REST API client for XMC NBI (GraphQL)
 
-Python version: 2.7.18
+## Requrements
+Python version both 2 and 3 (tested on 2.7.18 and 3.9.0)
 
-Code intentionally was designed to run in XMC Scripts/Workflows but it could be used in any kind of middleware 
+## Features
+* Support for user credentials (HTTP Basic Authentication)
+* Support for OAuth Authorization (HTTP Bearer)
+
+## Testing
+* Test with `python xmc_api.py`
