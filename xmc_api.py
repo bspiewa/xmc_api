@@ -78,15 +78,15 @@ class XmcApi(object):
             except AttributeError:
                 message = (
                     'BasicAuth to "{0}" with USERNAME="{1}" PASSWORD="{2}" '
-                    'failed with HTTP code: "{3:d}"'.format(
+                    'failed with code: "{3:d}"'.format(
                         url, self.username, self.password, code))
                 raise Exception(message)
         if code == 200:
             r_content = r.json()
             return r_content
         else:
-            message = 'HTTP GET to \'{0}\' failed with code: \'{1}\''.format(
-                url, str(code))
+            message = 'HTTP GET to "{0}" failed with code: "{1:d}"'.format(
+                url, code)
             raise Exception(message)
 
     def query(self, query):
