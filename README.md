@@ -1,4 +1,4 @@
-# xmc_api
+# xmcapi
 Python REST API client for XMC NBI (GraphQL)
 
 ## Requrements
