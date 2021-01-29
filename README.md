@@ -12,10 +12,11 @@ Both Python 2 and 3 are supported (tested on 2.7.18 and 3.9.0)
 * Test with `python xmc_api.py`
 
 ## Usage
-You can use `xmcapi` as external library in your project and import its's 
-`emc_nbi` object. In addition you can make your own fake `xmclib.py` module with 
-`emc_vars` dict to emulate XMC Scripting engine behavior which could be useful 
-for local scripts testing. Example below:
+You can just clone this repository to your project folder and import from `xmcapi`
+package it's `emc_nbi` object to your script. In addition you can create your own 
+fake `xmclib.py` with `emc_vars` dict to emulate XMC Scripting engine behavior which
+could be useful for your scripts development. Example below:
+Your `xmclib.py` file (set `serverIP` and `userName/password` or `client_id/secret`)
 ```
 ### xmclib.py
 emc_vars = {
