@@ -2,7 +2,7 @@
 Simple implementation of Python REST API client for Extreme Networks Management Center NBI
 
 ## Requrements
-Both Python 2 and 3 are supported (tested on 2.7.18 and 3.9.0)
+Both Python 2 and 3 are supported (tested on 2.7.18 and 3.9.0). Install `requests` library if missing.
 
 ## Features
 * Support for user credentials (HTTP Basic Authentication)
@@ -15,7 +15,7 @@ Both Python 2 and 3 are supported (tested on 2.7.18 and 3.9.0)
 You can just clone this repository to your project folder and import from `xmcapi`
 package it's `emc_nbi` object to your script. In addition you can create your own 
 fake `xmclib.py` with `emc_vars` dict to emulate XMC Scripting engine behavior which
-could be useful for your scripts development. Example below:
+could be useful for your scripts development. Example below:\
 Your `xmclib.py` file (set `serverIP` and `userName/password` or `client_id/secret`)
 ```
 ### xmclib.py
@@ -79,4 +79,4 @@ qry_result = emc_nbi.query(test_query.replace(
 for vlan in qry_result['network']['siteByLocation']['vlans']:
     print(vlan['name'], vlan['vid'])
 ```
-Run the code: `python test_query.py`
+* Run the code: `python test_query.py`
