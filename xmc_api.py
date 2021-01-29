@@ -101,7 +101,7 @@ if __name__ == '__main__':
     emc_nbi = XmcApi(host=host, client_id=client_id, secret=secret)
     # username = apiuser
     # password = testing123
-    # emc_nbi = XmcApi(username=username, password=password)
+    # emc_nbi = XmcApi(host=host, username=username, password=password)
     test_query = '''
     {
         network {
