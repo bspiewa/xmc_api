@@ -12,15 +12,16 @@ class XmcApi(object):
                  client_id=None, secret=None):
         if port is None:
             port = '8443'
-        self.url = {'nbi': 'https://{0}:{1}/nbi/graphql'.format(host, port),
-                    'oauth': 'https://{0}:{1}/oauth/token/access-token?'
-                    'grant_type=client_credentials'.format(host, port)}
+        self.url = {'nbi': 'https://{0}:{1}/nbi/graphql'.format(host, port)}
         if client_id is None or secret is None:
             self.username = username
             self.password = password
         else:
             self.client_id = client_id
             self.secret = secret
+            self.url['oauth'] = (
+                'https://{0}:{1}/oauth/token/access-token?'
+                'grant_type=client_credentials'.format(host, port))
             self.token = self._http_oauth(self.url['oauth'])
 
     def _http_basic_auth(self):
@@ -47,7 +48,7 @@ class XmcApi(object):
             raise Exception(message)
         return token['access_token']
 
-    def _http_get_headers(self):
+    def _http_post_headers(self):
         headers = {'Content-Type': 'application/json',
                    'Accept': 'application/json'}
         try:
@@ -61,26 +62,27 @@ class XmcApi(object):
         data = {'query': cmd}
         r = requests.post(
             url, verify=False, auth=self._http_basic_auth(),
-            headers=self._http_get_headers(),
+            headers=self._http_post_headers(),
             json=data)
         code = r.status_code
-        if code == 401:
+        if code != 200:
             try:
                 self._http_oauth(self.url['oauth'])
-                r = requests.post(
-                    url, verify=False, headers=self._http_get_headers(),
-                    json=data)
-                code = r.status_code
-            except AttributeError:
+            except KeyError:
                 message = (
                     'BasicAuth to "{0}" with USERNAME="{1}" PASSWORD="{2}" '
                     'failed with code: "{3:d}"'.format(
                         url, self.username, self.password, code))
                 raise Exception(message)
+            else:
+                r = requests.post(
+                    url, verify=False, headers=self._http_post_headers(),
+                    json=data)
+                code = r.status_code
         if code == 200:
             r_content = r.json()
         else:
-            message = 'HTTP GET to "{0}" failed with code: "{1:d}"'.format(
+            message = 'HTTP POST to "{0}" failed with code: "{1:d}"'.format(
                 url, code)
             raise Exception(message)
         return r_content['data']
@@ -99,9 +101,9 @@ if __name__ == '__main__':
     client_id = 'oSfXvoUrfV'
     secret = '1a83fb17-c2bd-46ae-9ee1-9095533740cb'
     emc_nbi = XmcApi(host=host, client_id=client_id, secret=secret)
-    # username = apiuser
-    # password = testing123
-    # emc_nbi = XmcApi(host=host, username=username, password=password)
+    #username = 'apiuser'
+    #password = 'password'
+    #emc_nbi = XmcApi(host=host, username=username, password=password)
     test_query = '''
     {
         network {
