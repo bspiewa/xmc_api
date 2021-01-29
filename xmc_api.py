@@ -3,42 +3,34 @@ from __future__ import print_function
 import requests
 import urllib3
 
-from xmclib import emc_vars  # credentials and IP in emc_vars dictionary
-
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class XmcApi(object):
-    def __init__(self, xmc_ip=None, xmc_port=None, username=None,
-                 password=None, client_id=None, secret=None):
-        if xmc_ip is None:
-            xmc_ip = emc_vars['serverIP']
-        if xmc_port is None:
-            xmc_port = '8443'
-        self.url = {
-            'nbi': 'https://{0}:{1}/nbi/graphql'.format(xmc_ip, xmc_port),
-            'oauth': 'https://{0}:{1}/oauth/token/access-token?'
-            'grant_type=client_credentials'.format(xmc_ip, xmc_port)
-        }
-        if client_id is None and secret is None:
-            if username is None:
-                self.username = emc_vars['userName']
-            else:
-                self.username = username
+
+    def __init__(self, host, port=None, username=None, password=None,
+                 client_id=None, secret=None):
+        if port is None:
+            port = '8443'
+        self.url = {'nbi': 'https://{0}:{1}/nbi/graphql'.format(host, port),
+                    'oauth': 'https://{0}:{1}/oauth/token/access-token?'
+                    'grant_type=client_credentials'.format(host, port)}
+        if client_id is None or secret is None:
+            self.username = username
             self.password = password
         else:
             self.client_id = client_id
             self.secret = secret
-            self.token = self.http_oauth(self.url['oauth'])
+            self.token = self._http_oauth(self.url['oauth'])
 
-    def http_basic_auth(self):
+    def _http_basic_auth(self):
         try:
             auth = self.username, self.password
         except AttributeError:
             auth = None
         return auth
 
-    def http_oauth(self, url):
+    def _http_oauth(self, url):
         headers = {'Content-Type': 'application/x-www-form-urlencoded',
                    'Cache-Control': 'no-cache',
                    'Accept': 'application/json'}
@@ -55,7 +47,7 @@ class XmcApi(object):
             raise Exception(message)
         return token['access_token']
 
-    def http_get_headers(self):
+    def _http_get_headers(self):
         headers = {'Content-Type': 'application/json',
                    'Accept': 'application/json'}
         try:
@@ -64,16 +56,20 @@ class XmcApi(object):
             pass
         return headers
 
-    def get(self, url, params):
-        r = requests.get(url, verify=False, auth=self.http_basic_auth(),
-                         headers=self.http_get_headers(), params=params)
+    def _cmd(self, cmd):
+        url = self.url['nbi']
+        data = {'query': cmd}
+        r = requests.post(
+            url, verify=False, auth=self._http_basic_auth(),
+            headers=self._http_get_headers(),
+            json=data)
         code = r.status_code
         if code == 401:
             try:
-                self.http_oauth(self.url['oauth'])
-                r = requests.get(
-                    url, verify=False, headers=self.http_get_headers(),
-                    params=params)
+                self._http_oauth(self.url['oauth'])
+                r = requests.post(
+                    url, verify=False, headers=self._http_get_headers(),
+                    json=data)
                 code = r.status_code
             except AttributeError:
                 message = (
@@ -83,23 +79,29 @@ class XmcApi(object):
                 raise Exception(message)
         if code == 200:
             r_content = r.json()
-            return r_content
         else:
             message = 'HTTP GET to "{0}" failed with code: "{1:d}"'.format(
                 url, code)
             raise Exception(message)
+        return r_content['data']
 
     def query(self, query):
-        query = 'query=' + query
-        r_content = self.get(self.url['nbi'], query)
-        return r_content
+        return self._cmd('query ' + query)
+
+    def mutation(self, mutation):
+        return self._cmd('mutation ' + mutation)
 
 
 if __name__ == '__main__':
     """Self-testing code"""
 
-    emc_nbi = XmcApi(client_id=emc_vars['client_id'], secret=emc_vars['secret'])
-    # emc_nbi = XmcApi(password=emc_vars['password'])
+    host = '10.100.0.40'
+    client_id = 'oSfXvoUrfV'
+    secret = '1a83fb17-c2bd-46ae-9ee1-9095533740cb'
+    emc_nbi = XmcApi(host=host, client_id=client_id, secret=secret)
+    # username = apiuser
+    # password = testing123
+    # emc_nbi = XmcApi(username=username, password=password)
     test_query = '''
     {
         network {
