@@ -13,7 +13,7 @@ Both Python 2 and 3 are supported (tested on 2.7.18 and 3.9.0)
 
 ## Usage
 You can use `xmcapi` as external library in your project and import its's 
-emc_nbi object. In addition you can make your own fake xmclib.py module with 
+`emc_nbi` object. In addition you can make your own fake `xmclib.py` module with 
 `emc_vars` dict to emulate XMC Scripting engine behavior which could be useful 
 for local scripts testing. Example below:
 ```
