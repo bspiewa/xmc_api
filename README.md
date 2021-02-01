@@ -1,5 +1,5 @@
 # xmcapi
-Simple implementation of Python REST API client for Extreme Networks Management Center NBI
+Simple implementation of Python GraphQL Client for Extreme Networks Management Center NBI
 
 ## Requrements
 Both Python 2 and 3 are supported (tested on 2.7.18 and 3.9.0). Install `requests` library if missing.
